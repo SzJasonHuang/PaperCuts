@@ -56,7 +56,6 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         user.setCreatedAt(Instant.now());
         if (user.getIsAdmin() == null) user.setIsAdmin(false);
-        if (user.getNumUser() == null) user.setNumUser(1);
         if (user.getSessionIds() == null) user.setSessionIds(new ArrayList<>());
         
         User savedUser = userRepository.save(user);
@@ -74,8 +73,8 @@ public class UserController {
         return userRepository.findById(id)
                 .map(user -> {
                     if (updates.getName() != null) user.setName(updates.getName());
+                    if (updates.getPassword() != null) user.setPassword(updates.getPassword());
                     if (updates.getIsAdmin() != null) user.setIsAdmin(updates.getIsAdmin());
-                    if (updates.getNumUser() != null) user.setNumUser(updates.getNumUser());
                     if (updates.getSessionIds() != null) user.setSessionIds(updates.getSessionIds());
                     return ResponseEntity.ok(userRepository.save(user));
                 })
