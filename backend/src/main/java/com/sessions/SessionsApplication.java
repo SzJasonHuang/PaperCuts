@@ -18,9 +18,9 @@ public class SessionsApplication {
         // Replace the placeholder with your MongoDB deployment's connection string
         String uri = "mongodb+srv://whuang45_db_user:clijlassMZeEPzqm@hackthecoast.hgra0ow.mongodb.net/?appName=HacktheCoast";
         try (MongoClient mongoClient = MongoClients.create(uri)) {
-            MongoDatabase database = mongoClient.getDatabase("sample_mflix");
-            MongoCollection<Document> collection = database.getCollection("movies");
-            Document doc = collection.find(eq("title", "Back to the Future")).first();
+            MongoDatabase database = mongoClient.getDatabase("HackTheCoast");
+            MongoCollection<Document> collection = database.getCollection("Users");
+            Document doc = collection.find(eq("userId", "U12345")).first();
             if (doc != null) {
                 System.out.println(doc.toJson());
             } else {
