@@ -27,5 +27,6 @@ public class SessionsApplication {
                 System.out.println("No matching documents found.");
             }
         }
+        SpringApplication.run(SessionsApplication.class, args);
     }
 }
