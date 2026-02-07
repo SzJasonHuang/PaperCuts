@@ -13,4 +13,6 @@ public interface SessionRepository extends MongoRepository<Session, String> {
     List<Session> findByUserIdOrderByCreatedAtDesc(String userId);
     
     List<Session> findAllByOrderByCreatedAtDesc();
+    
+    List<Session> findByOptimizingScoreGreaterThanEqual(Integer score);
 }
