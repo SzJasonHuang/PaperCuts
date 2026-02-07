@@ -43,7 +43,6 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable String id) {
         // First try by MongoDB _id
         return userRepository.findById(id)
-                .or(() -> userRepository.findByUserId(id))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

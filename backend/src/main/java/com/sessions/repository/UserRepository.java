@@ -9,8 +9,8 @@ import java.util.List;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
     
-    Optional<User> findByUserId(String userId);
-    
+    Optional<User> findByid(String id);
+
     List<User> findByIsAdmin(Boolean isAdmin);
     
     List<User> findAllByOrderByCreatedAtDesc();
