@@ -12,9 +12,6 @@ public class Session {
     private String id;  // MongoDB ObjectId as string
     
     @Indexed
-    private String sessionId;  // optional readable ID (e.g., "S98765")
-    
-    @Indexed
     private String userId;  // reference to users._id (ObjectId)
     
     private Integer pages;
@@ -32,9 +29,6 @@ public class Session {
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    
-    public String getSessionId() { return sessionId; }
-    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
     
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
