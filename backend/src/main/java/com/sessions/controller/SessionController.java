@@ -11,7 +11,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/sessions")
@@ -51,10 +50,6 @@ public class SessionController {
     @PostMapping
     public ResponseEntity<Session> createSession(@RequestBody Session session) {
         session.setCreatedAt(Instant.now());
-        // Generate a readable session ID if not provided
-        if (session.getSessionId() == null || session.getSessionId().isEmpty()) {
-            session.setSessionId("S" + UUID.randomUUID().toString().substring(0, 5).toUpperCase());
-        }
         
         Session savedSession = sessionRepository.save(session);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSession);
