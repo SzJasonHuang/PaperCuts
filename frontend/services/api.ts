@@ -1,49 +1,57 @@
-import { Session, CreateSessionRequest, SessionsResponse } from '@/types/session';
+import { Session, CreateSessionRequest, SessionsResponse, User, UsersResponse, CreateUserRequest } from '@/types/session';
 
 // Configure your Spring Boot backend URL here
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 // Mock data for development - remove when connecting to real backend
+const mockUsers: User[] = [
+  {
+    _id: '65f1a2b3c4d5e6f7a8b9c0d1',
+    userId: 'U12345',
+    name: 'Jason Huang',
+    isAdmin: false,
+    numUser: 1,
+    sessionIds: ['65f2a3b4c5d6e7f8a9b0c1d2', '65a3b4c5d6e7f8a9b0c1d2e3'],
+    createdAt: '2026-02-07T00:00:00Z',
+  },
+  {
+    _id: '65f1a2b3c4d5e6f7a8b9c0d2',
+    userId: 'U12346',
+    name: 'Sarah Chen',
+    isAdmin: true,
+    numUser: 1,
+    sessionIds: ['65f2a3b4c5d6e7f8a9b0c1d3'],
+    createdAt: '2026-02-06T00:00:00Z',
+  },
+];
+
 const mockSessions: Session[] = [
   {
-    id: '1',
-    userId: 'user-001',
-    title: 'Data Processing Pipeline',
-    description: 'ETL job for customer analytics',
-    status: 'active',
-    createdAt: '2026-02-07T10:30:00Z',
-    updatedAt: '2026-02-07T10:30:00Z',
-    metadata: { type: 'etl', priority: 'high' }
+    _id: '65f2a3b4c5d6e7f8a9b0c1d2',
+    sessionId: 'S98765',
+    userId: '65f1a2b3c4d5e6f7a8b9c0d1',
+    pages: 42,
+    inkUse: 0.18,
+    optimizingScore: 82,
+    createdAt: '2026-02-07T02:13:00Z',
   },
   {
-    id: '2',
-    userId: 'user-001',
-    title: 'ML Model Training',
-    description: 'Training recommendation engine v2',
-    status: 'completed',
-    createdAt: '2026-02-06T14:00:00Z',
-    updatedAt: '2026-02-07T08:00:00Z',
-    metadata: { type: 'ml', model: 'recommendation-v2' }
+    _id: '65a3b4c5d6e7f8a9b0c1d2e3',
+    sessionId: 'S98766',
+    userId: '65f1a2b3c4d5e6f7a8b9c0d1',
+    pages: 28,
+    inkUse: 0.12,
+    optimizingScore: 91,
+    createdAt: '2026-02-06T14:30:00Z',
   },
   {
-    id: '3',
-    userId: 'user-002',
-    title: 'API Integration Test',
-    description: 'Testing third-party payment gateway',
-    status: 'pending',
-    createdAt: '2026-02-07T09:00:00Z',
-    updatedAt: '2026-02-07T09:00:00Z',
-    metadata: { type: 'integration', service: 'stripe' }
-  },
-  {
-    id: '4',
-    userId: 'user-001',
-    title: 'Database Migration',
-    description: 'Migrating to new schema version',
-    status: 'active',
-    createdAt: '2026-02-07T11:00:00Z',
-    updatedAt: '2026-02-07T11:15:00Z',
-    metadata: { type: 'migration', version: '2.0' }
+    _id: '65f2a3b4c5d6e7f8a9b0c1d3',
+    sessionId: 'S98767',
+    userId: '65f1a2b3c4d5e6f7a8b9c0d2',
+    pages: 156,
+    inkUse: 0.45,
+    optimizingScore: 67,
+    createdAt: '2026-02-07T09:45:00Z',
   },
 ];
 
@@ -53,7 +61,7 @@ export const sessionsApi = {
   // GET /sessions?userId=...
   async getSessions(userId?: string): Promise<SessionsResponse> {
     if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
       const filtered = userId 
         ? mockSessions.filter(s => s.userId === userId)
         : mockSessions;
@@ -73,11 +81,10 @@ export const sessionsApi = {
     if (USE_MOCK) {
       await new Promise(resolve => setTimeout(resolve, 500));
       const newSession: Session = {
-        id: String(mockSessions.length + 1),
+        _id: String(Date.now()),
+        sessionId: `S${Math.floor(Math.random() * 100000)}`,
         ...data,
-        status: 'pending',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
       mockSessions.push(newSession);
       return newSession;
@@ -89,6 +96,59 @@ export const sessionsApi = {
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error('Failed to create session');
+    return response.json();
+  },
+};
+
+export const usersApi = {
+  // GET /users
+  async getUsers(): Promise<UsersResponse> {
+    if (USE_MOCK) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { users: mockUsers, total: mockUsers.length };
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users`);
+    if (!response.ok) throw new Error('Failed to fetch users');
+    return response.json();
+  },
+
+  // GET /users/:id
+  async getUser(id: string): Promise<User> {
+    if (USE_MOCK) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const user = mockUsers.find(u => u._id === id || u.userId === id);
+      if (!user) throw new Error('User not found');
+      return user;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch user');
+    return response.json();
+  },
+
+  // POST /users
+  async createUser(data: CreateUserRequest): Promise<User> {
+    if (USE_MOCK) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const newUser: User = {
+        _id: String(Date.now()),
+        ...data,
+        isAdmin: data.isAdmin ?? false,
+        numUser: data.numUser ?? 1,
+        sessionIds: [],
+        createdAt: new Date().toISOString(),
+      };
+      mockUsers.push(newUser);
+      return newUser;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Failed to create user');
     return response.json();
   },
 };

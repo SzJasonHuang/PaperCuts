@@ -11,10 +11,11 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/sessions")
-@CrossOrigin(origins = "*") // Configure properly for production
+@CrossOrigin(origins = "*")
 public class SessionController {
     
     @Autowired
@@ -22,7 +23,7 @@ public class SessionController {
     
     /**
      * GET /api/sessions
-     * GET /api/sessions?userId=user-001
+     * GET /api/sessions?userId={objectId}
      */
     @GetMapping
     public ResponseEntity<Map<String, Object>> getSessions(
@@ -45,13 +46,15 @@ public class SessionController {
     
     /**
      * POST /api/sessions
-     * Body: { userId, title, description?, metadata? }
+     * Body: { userId, pages, inkUse, optimizingScore }
      */
     @PostMapping
     public ResponseEntity<Session> createSession(@RequestBody Session session) {
         session.setCreatedAt(Instant.now());
-        session.setUpdatedAt(Instant.now());
-        session.setStatus(Session.SessionStatus.pending);
+        // Generate a readable session ID if not provided
+        if (session.getSessionId() == null || session.getSessionId().isEmpty()) {
+            session.setSessionId("S" + UUID.randomUUID().toString().substring(0, 5).toUpperCase());
+        }
         
         Session savedSession = sessionRepository.save(session);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSession);
@@ -77,11 +80,9 @@ public class SessionController {
         
         return sessionRepository.findById(id)
                 .map(session -> {
-                    if (updates.getTitle() != null) session.setTitle(updates.getTitle());
-                    if (updates.getDescription() != null) session.setDescription(updates.getDescription());
-                    if (updates.getStatus() != null) session.setStatus(updates.getStatus());
-                    if (updates.getMetadata() != null) session.setMetadata(updates.getMetadata());
-                    session.setUpdatedAt(Instant.now());
+                    if (updates.getPages() != null) session.setPages(updates.getPages());
+                    if (updates.getInkUse() != null) session.setInkUse(updates.getInkUse());
+                    if (updates.getOptimizingScore() != null) session.setOptimizingScore(updates.getOptimizingScore());
                     return ResponseEntity.ok(sessionRepository.save(session));
                 })
                 .orElse(ResponseEntity.notFound().build());

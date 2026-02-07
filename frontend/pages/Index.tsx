@@ -37,9 +37,9 @@ const Index = () => {
       <main className="container py-8">
         {/* Page header */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight">Sessions</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Print Sessions</h2>
           <p className="text-muted-foreground mt-1">
-            Manage and monitor your sessions. Filter by user ID or create new ones.
+            Monitor print sessions, pages, ink usage, and optimization scores.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ const Index = () => {
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} className="h-[180px] rounded-lg" />
+              <Skeleton key={i} className="h-[220px] rounded-lg" />
             ))}
           </div>
         ) : error ? (
@@ -96,11 +96,12 @@ const Index = () => {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data?.sessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <SessionCard key={session._id} session={session} />
             ))}
           </div>
         )}
 
+        {/* API Reference */}
         <div className="mt-12 rounded-lg border border-border/50 bg-card/50 p-6">
           <h3 className="text-lg font-semibold mb-4">API Reference</h3>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -110,7 +111,7 @@ const Index = () => {
                 <code className="text-sm font-mono">/sessions?userId=...</code>
               </div>
               <p className="text-sm text-muted-foreground">
-                Fetch sessions, optionally filtered by userId
+                Fetch sessions, optionally filtered by userId (ObjectId)
               </p>
             </div>
             <div className="space-y-2">
@@ -119,7 +120,7 @@ const Index = () => {
                 <code className="text-sm font-mono">/sessions</code>
               </div>
               <p className="text-sm text-muted-foreground">
-                Create a new session with userId, title, description
+                Create session with userId, pages, inkUse, optimizingScore
               </p>
             </div>
           </div>
