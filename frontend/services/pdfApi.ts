@@ -2,7 +2,7 @@ import type { PdfSession, OptimizeSettings, AnalysisResult, UploadResponse } fro
 
 // Toggle for mock vs real API
 // Set to true for demo mode without backend, false for real backend
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true' || false;
+const USE_MOCK = true;
 
 // Base API URL - point to your Spring Boot backend
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
