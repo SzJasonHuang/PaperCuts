@@ -1,0 +1,8 @@
+# Copy this file to application-local.properties and fill in your values
+# DO NOT commit application-local.properties to git!
+
+# MongoDB Atlas Connection
+MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/DATABASE
+
+# Gemini AI API Key
+GEMINI_API_KEY=your-gemini-api-key-here
