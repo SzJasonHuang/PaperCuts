@@ -97,7 +97,7 @@ export const PreviewStep = ({
         {/* HTML Report */}
         <div className="flex flex-col">
           <div className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
-            Report Preview
+            Download EcoPDF
           </div>
           <div className="bg-background rounded-lg h-48 border overflow-hidden">
             {isLoadingReport ? (
@@ -148,7 +148,7 @@ export const PreviewStep = ({
         </Button>
         <Button onClick={handleDownloadReport}>
           <Download className="mr-2 h-4 w-4" />
-          Download Report
+          Download EcoPDF
         </Button>
       </div>
     </div>
