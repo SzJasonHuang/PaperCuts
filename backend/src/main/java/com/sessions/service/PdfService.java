@@ -25,6 +25,7 @@ import com.google.genai.Client;
 import com.google.genai.types.Content;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 // Use Builder class for instantiation. Explicitly set the API key to use Gemini
 // Developer backend.
@@ -95,6 +96,7 @@ public class PdfService {
             Content.fromParts(
             Part.fromText("Suggest three ways this pdf could be edited to improve ink and page usage, for sustainability purposes. Additionally, don't use any markdown and maximum 40 words"),
             Part.fromBytes(baos.toByteArray(),"application/pdf"));
+            
         
             GenerateContentResponse response =
             client.models.generateContent("gemini-2.5-flash", content, null);
@@ -124,6 +126,8 @@ public class PdfService {
         PdfSession session = pdfSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
         
+        pdfSessionRepository.save(session);
+        
         session.setStatus("OPTIMIZING");
         session.setInkSaverLevel(inkSaverLevel);
         session.setPageSaverLevel(pageSaverLevel);
@@ -131,8 +135,34 @@ public class PdfService {
         session.setExcludeImages(excludeImages);
         pdfSessionRepository.save(session);
         
+        
+        
         try (PDDocument document = Loader.loadPDF(new File(session.getOriginalFilePath()))) {
             List<String> changesApplied = new ArrayList<>();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            document.save(baos);
+
+            Content content =
+            Content.fromParts(
+            Part.fromText("Return ONLY a valid standalone HTML5 document (start with <!DOCTYPE html>) " +
+                "Use three specific edits to reduce ink and page usage" ),
+            Part.fromBytes(baos.toByteArray(),"application/pdf"));
+
+            GenerateContentResponse response =
+            client.models.generateContent("gemini-2.5-flash", content, null);
+            
+            String optimizedFileName = session.getId() + "_optimized.pdf";
+            Path optimizedPath = Paths.get(storagePath).resolve(optimizedFileName);
+            
+            try (OutputStream os = new FileOutputStream(optimizedPath.toFile())) {
+      PdfRendererBuilder builder = new PdfRendererBuilder();
+      builder.useFastMode();
+      builder.withHtmlContent(response.text(), null);
+      builder.toStream(os);
+      builder.run();
+    }
+
             
             // Apply margin reduction based on pageSaverLevel
             if (pageSaverLevel != null && pageSaverLevel > 0) {
@@ -145,11 +175,6 @@ public class PdfService {
                 // Note: Full image compression requires more complex PDFBox operations
                 changesApplied.add("Compressed images (quality reduction: " + inkSaverLevel + "%)");
             }
-            
-            // Save optimized PDF
-            String optimizedFileName = session.getId() + "_optimized.pdf";
-            Path optimizedPath = Paths.get(storagePath).resolve(optimizedFileName);
-            document.save(optimizedPath.toFile());
             
             session.setOptimizedFilePath(optimizedPath.toString());
             session.setPagesAfter(document.getNumberOfPages());
