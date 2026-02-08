@@ -233,6 +233,8 @@ async function handleOptimize() {
   elements.optimizeBtn.innerHTML = '<span>⏳</span> Generating...';
 
   try {
+    console.log('Optimizing session:', sessionId);
+    
     const response = await fetch(`${API_BASE}/pdf/${sessionId}/optimize`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -244,11 +246,21 @@ async function handleOptimize() {
       })
     });
 
+    console.log('Optimize response status:', response.status);
+
     if (!response.ok) {
-      throw new Error('Optimization failed');
+      let errorMsg = `Server error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMsg = errorData.error || errorData.message || errorMsg;
+      } catch {
+        // Ignore parse errors
+      }
+      throw new Error(errorMsg);
     }
 
     const optimizedData = await response.json();
+    console.log('Optimization result:', optimizedData);
 
     // Update session data
     sessionData.pagesAfter = optimizedData.pagesAfter;
@@ -270,7 +282,12 @@ async function handleOptimize() {
 
   } catch (error) {
     console.error('Optimize error:', error);
-    showError(error.message || 'Failed to generate report');
+    // Show more helpful error message
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      showError('Cannot connect to backend. Make sure the server is running.');
+    } else {
+      showError(`Optimization failed: ${error.message}`);
+    }
   } finally {
     elements.optimizeBtn.disabled = false;
     elements.optimizeBtn.innerHTML = '<span>🚀</span> Generate EcoPDF Report';
