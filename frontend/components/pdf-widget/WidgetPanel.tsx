@@ -220,14 +220,14 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
         {steps.map((step, idx) => (
           <div key={step.id} className="flex items-center">
             <button
-              onClick={() => idx < currentStepIndex && setCurrentStep(step.id)}
-              disabled={idx >= currentStepIndex}
+              onClick={() => idx > 0 && idx < currentStepIndex && setCurrentStep(step.id)}
+              disabled={idx === 0 || idx >= currentStepIndex}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors",
                 idx <= currentStepIndex
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground",
-                idx < currentStepIndex && "cursor-pointer hover:opacity-80"
+                idx > 0 && idx < currentStepIndex && "cursor-pointer hover:opacity-80"
               )}
             >
               {step.icon}
