@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { dashboardApi } from '@/services/dashboardApi';
 import { FileText, Droplets, TrendingUp, BarChart3 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 interface OrgMetrics {
   totalPagesSaved: number;
   totalInkSaved: number;
@@ -62,14 +60,9 @@ const Dashboard = () => {
     </Card>;
   return <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Organization Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Track your sustainability impact</p>
-          </div>
-          <Link to="/">
-            <Button variant="outline">Back to Home</Button>
-          </Link>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground">Organization Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Track your sustainability impact</p>
         </div>
 
         {loading ? <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -83,8 +76,6 @@ const Dashboard = () => {
                 </CardContent>
               </Card>)}
           </div> : <>
-            {error}
-
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <MetricCard title="Avg Optimization Score" value={metrics?.avgOptimizingScore?.toFixed(0) || 0} unit="/100" icon={TrendingUp} description="Organization-wide average" />
               <MetricCard title="Pages Saved" value={metrics?.totalPagesSaved?.toLocaleString() || 0} icon={FileText} description="Total pages conserved" />
@@ -92,7 +83,7 @@ const Dashboard = () => {
               <MetricCard title="Total Sessions" value={metrics?.totalSessions?.toLocaleString() || 0} icon={BarChart3} description="PDFs optimized to date" />
             </div>
 
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="mt-8">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Environmental Impact</CardTitle>
@@ -116,22 +107,6 @@ const Dashboard = () => {
                       {((metrics?.totalPagesSaved || 0) * 0.01).toFixed(1)}
                     </span>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Link to="/" className="block">
-                    <Button className="w-full" variant="default">
-                      Optimize a PDF
-                    </Button>
-                  </Link>
-                  <Button className="w-full" variant="outline" disabled>
-                    Export Report (Coming Soon)
-                  </Button>
                 </CardContent>
               </Card>
             </div>
