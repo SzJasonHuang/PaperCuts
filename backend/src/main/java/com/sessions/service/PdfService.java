@@ -40,7 +40,23 @@ public class PdfService {
     @Value("${pdf.storage.path:./pdf-storage}")
     private String storagePath;
     
-    private static Client client = Client.builder().apiKey("AIzaSyCbI0EsycPwKV17RE2pO875MAlNdvB9sJg").build();
+    @Value("${gemini.api.key:}")
+    private String geminiApiKey;
+    
+    private Client client;
+    
+    /**
+     * Get or initialize Gemini client lazily
+     */
+    private Client getClient() {
+        if (client == null && geminiApiKey != null && !geminiApiKey.isEmpty()) {
+            client = Client.builder().apiKey(geminiApiKey).build();
+        }
+        if (client == null) {
+            throw new RuntimeException("Gemini API key not configured. Set GEMINI_API_KEY environment variable.");
+        }
+        return client;
+    }
     
     /**
      * Upload and store a PDF file
@@ -99,7 +115,7 @@ public class PdfService {
             
         
             GenerateContentResponse response =
-            client.models.generateContent("gemini-2.5-flash", content, null);
+            getClient().models.generateContent("gemini-2.5-flash", content, null);
 
             // Generate AI suggestions based on document analysis
             List<String> suggestions = Arrays.asList(response.text().split("\\$NEWLINE\\$"));
@@ -113,7 +129,7 @@ public class PdfService {
 
 
             response =
-            client.models.generateContent("gemini-2.5-flash", content, null);
+            getClient().models.generateContent("gemini-2.5-flash", content, null);
             
             int score = 50;
             try {
@@ -162,7 +178,7 @@ public class PdfService {
                 Part.fromBytes(baos.toByteArray(), "application/pdf")
             );
 
-            GenerateContentResponse response = client.models.generateContent("gemini-2.5-flash", content, null);
+            GenerateContentResponse response = getClient().models.generateContent("gemini-2.5-flash", content, null);
 
             // Save HTML report
             String reportFileName = session.getId() + "_report.html";
