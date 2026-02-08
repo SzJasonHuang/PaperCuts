@@ -4,6 +4,8 @@
 
 ## Quick Start
 
+In `backend/src/main/java/com/sessions/service/PdfService.java`, input a valid Google Gemini API Key (the key we used for the project is available on request).
+
 ```bash
 cd backend
 ./mvnw spring-boot:run

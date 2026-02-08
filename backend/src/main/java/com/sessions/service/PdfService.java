@@ -40,7 +40,7 @@ public class PdfService {
     @Value("${pdf.storage.path:./pdf-storage}")
     private String storagePath;
     
-    private static Client client = Client.builder().apiKey("AIzaSyCbI0EsycPwKV17RE2pO875MAlNdvB9sJg").build();
+    private static Client client = Client.builder().apiKey("{INSERT API KEY HERE}").build();
     
     /**
      * Upload and store a PDF file

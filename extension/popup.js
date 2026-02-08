@@ -213,7 +213,7 @@ async function handleFileUpload(file) {
 function populateResults() {
   elements.fileName.textContent = sessionData.fileName;
   elements.pagesCount.textContent = sessionData.pagesBefore || '--';
-  elements.inkUsage.textContent = sessionData.inkBefore ? `${sessionData.inkBefore}%` : '--';
+  elements.inkUsage.textContent = sessionData.inkBefore ? `${Math.round(sessionData.inkBefore*100)}%` : '--';
   elements.optScore.textContent = sessionData.optimizingScore ? `${sessionData.optimizingScore}%` : '--';
 
   // Suggestions
