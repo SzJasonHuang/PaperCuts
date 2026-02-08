@@ -145,23 +145,33 @@ public class PdfService {
 
             Content content =
             Content.fromParts(
-            Part.fromText("Return ONLY a valid standalone HTML5 document (start with <!DOCTYPE html>) " +
-                "Use three specific edits to reduce ink and page usage" ),
+            Part.fromText("Return ONLY a valid standalone HTML5 document (start with <!DOCTYPE html>). Use three specific edits to reduce ink and page usage. Do NOT use any markdown formatting. Format the code as plain text only." ),
             Part.fromBytes(baos.toByteArray(),"application/pdf"));
 
             GenerateContentResponse response =
             client.models.generateContent("gemini-2.5-flash", content, null);
+
             
             String optimizedFileName = session.getId() + "_optimized.pdf";
             Path optimizedPath = Paths.get(storagePath).resolve(optimizedFileName);
+
+            File html = Paths.get(storagePath).resolve(session.getId() + "_optimized.html").toFile();
+
+            PrintWriter out = new PrintWriter(html);
+
+            out.println(response.text());
+            out.close();
             
-            try (OutputStream os = new FileOutputStream(optimizedPath.toFile())) {
-      PdfRendererBuilder builder = new PdfRendererBuilder();
-      builder.useFastMode();
-      builder.withHtmlContent(response.text(), null);
-      builder.toStream(os);
-      builder.run();
-    }
+            OutputStream os = new FileOutputStream(optimizedPath.toFile());
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.withFile(html);
+            builder.toStream(os);
+            try {
+                builder.run();
+            } catch (Exception e) {
+                System.out.println(response.text());
+            }
 
             
             // Apply margin reduction based on pageSaverLevel
