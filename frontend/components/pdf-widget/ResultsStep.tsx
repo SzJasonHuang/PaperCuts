@@ -44,7 +44,7 @@ export const ResultsStep = ({ session, onOptimize, isOptimizing }: ResultsStepPr
                 <span className="text-primary"> → {(session.inkAfter * 100).toFixed(0)}%</span>
               )}
             </div>
-            <div className="text-xs text-muted-foreground">Ink Usage</div>
+            <div className="text-xs text-muted-foreground">Ink Coverage</div>
             {inkSavedPercent > 0 && (
               <div className="text-xs text-primary font-medium">-{inkSavedPercent}% saved</div>
             )}

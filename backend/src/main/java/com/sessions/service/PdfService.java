@@ -94,7 +94,7 @@ public class PdfService {
 
             Content content =
             Content.fromParts(
-            Part.fromText("Suggest three ways this pdf could be edited to improve ink and page usage, for sustainability purposes. Additionally, don't use any markdown and maximum 40 words"),
+            Part.fromText("Suggest three ways this pdf could be edited to improve ink and page usage, for sustainability purposes. Additionally, don't use any markdown and maximum 40 words. Divide reasons with the string $NEWLINE$"),
             Part.fromBytes(baos.toByteArray(),"application/pdf"));
             
         
@@ -102,11 +102,23 @@ public class PdfService {
             client.models.generateContent("gemini-2.5-flash", content, null);
 
             // Generate AI suggestions based on document analysis
-            List<String> suggestions = Arrays.asList(new String[]{response.text()});
+            List<String> suggestions = Arrays.asList(response.text().split("\\$NEWLINE\\$"));
             session.setSuggestions(suggestions);
+
+
+            content =
+            Content.fromParts(
+            Part.fromText("Give this document a score out of 100 points, taking into consideration effective page use and ink conservation from an a sustainability standpoint. Return the score as a whole number with NO OTHER TEXT."),
+            Part.fromBytes(baos.toByteArray(),"application/pdf"));
+
+
+            response =
+            client.models.generateContent("gemini-2.5-flash", content, null);
             
-            // Calculate initial optimization score
-            int score = calculateOptimizingScore(document);
+            int score = 50;
+            try {
+                score = Integer.parseInt(response.text());
+            } catch (Exception e) {}
             session.setOptimizingScore(score);
             
             session.setStatus("ANALYZED");
