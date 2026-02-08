@@ -54,9 +54,37 @@ public class UserController {
 
     
     /**
-     * GET /api/users/{id}/inktotal
+     * GET /api/users/pageTotal/{id}
      */
-    @GetMapping("/inktotal/{id}")
+    @GetMapping("/pageTotal/{id}")
+    public ResponseEntity<Integer> getUserPageTotal(@PathVariable String id) {
+        Integer totalPages = 0;
+
+        try {
+            Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
+
+            for (String sessionID : user.get().getSessionIds()) {
+                Optional<Session> session = sessionRepository.findById(sessionID);
+
+                try {
+                    totalPages += session.get().getPages();
+                } catch (Exception e) {
+                    System.err.printf("No session with ID %s.%n", sessionID);
+                }
+            }
+
+            return(new ResponseEntity<Integer>(totalPages, HttpStatus.OK));
+        } catch (Exception e) {
+            return(ResponseEntity.internalServerError().build());
+        }
+    }
+
+
+    
+    /**
+     * GET /api/users/inkTotal/{id}
+     */
+    @GetMapping("/inkTotal/{id}")
     public ResponseEntity<Double> getUserInkTotal(@PathVariable String id) {
         Double totalInk = 0.;
 
@@ -78,6 +106,7 @@ public class UserController {
             return(ResponseEntity.internalServerError().build());
         }
     }
+
     
     /**
      * POST /api/users

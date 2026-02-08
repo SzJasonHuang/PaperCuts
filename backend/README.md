@@ -81,6 +81,9 @@ backend/
 | POST | `/api/users` | Create user (userId, name, isAdmin?, numUser?) |
 | PUT | `/api/users/{id}` | Update user |
 | DELETE | `/api/users/{id}` | Delete user |
+| GET | `/api/users/inkTotal/{id}` | Get total ink used by user |
+| GET | `/api/users/pageTotal/{id}` | Get total pages printed by user |
+| GET | `/api/users/avgScore/{id}` | Get user's average optimization score |
 | POST | `/api/users/{id}/sessions/{sessionId}` | Add session to user |
 
 ## MongoDB Atlas Setup (Teammate A)
