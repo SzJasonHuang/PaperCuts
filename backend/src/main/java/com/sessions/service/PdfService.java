@@ -32,7 +32,7 @@ public class PdfService {
     /**
      * Upload and store a PDF file
      */
-    public PdfSession uploadPdf(MultipartFile file, String userId) throws IOException {
+    public PdfSession uploadPdf(MultipartFile file) throws IOException {
         // Create storage directory if it doesn't exist
         Path storageDir = Paths.get(storagePath);
         if (!Files.exists(storageDir)) {

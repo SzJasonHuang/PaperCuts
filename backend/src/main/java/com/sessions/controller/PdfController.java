@@ -49,7 +49,7 @@ public class PdfController {
         }
         
         try {
-            PdfSession session = pdfService.uploadPdf(file, userId);
+            PdfSession session = pdfService.uploadPdf(file);
             
             Map<String, Object> response = new HashMap<>();
             response.put("sessionId", session.getId());
