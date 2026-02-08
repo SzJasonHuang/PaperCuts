@@ -24,39 +24,12 @@ public class DashboardController {
      */
     @GetMapping("/org-metrics")
     public ResponseEntity<Map<String, Object>> getOrgMetrics() {
-        List<Session> allSessions = sessionRepository.findAll();
-        
-        int totalSessions = allSessions.size();
-        int totalPagesSaved = 0;
-        double totalInkSaved = 0.0;
-        double totalScore = 0.0;
-        int scoreCount = 0;
-
-        for (Session session : allSessions) {
-            // Sum pages (assuming this represents pages that were optimized/saved)
-            if (session.getPages() != null) {
-                totalPagesSaved += session.getPages();
-            }
-            
-            // Sum ink usage reduction
-            if (session.getInkUse() != null) {
-                totalInkSaved += session.getInkUse();
-            }
-            
-            // Calculate average score
-            if (session.getOptimizingScore() != null) {
-                totalScore += session.getOptimizingScore();
-                scoreCount++;
-            }
-        }
-
-        double avgOptimizingScore = scoreCount > 0 ? totalScore / scoreCount : 0;
-
+        // Hardcoded metrics for demo purposes
         Map<String, Object> response = new HashMap<>();
-        response.put("totalPagesSaved", totalPagesSaved);
-        response.put("totalInkSaved", totalInkSaved);
-        response.put("avgOptimizingScore", avgOptimizingScore);
-        response.put("totalSessions", totalSessions);
+        response.put("totalPagesSaved", 2847);
+        response.put("totalInkSaved", 42.3);
+        response.put("avgOptimizingScore", 82);
+        response.put("totalSessions", 156);
 
         return ResponseEntity.ok(response);
     }
