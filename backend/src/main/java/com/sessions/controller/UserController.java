@@ -53,6 +53,8 @@ public class UserController {
     }
 
     
+
+
     /**
      * GET /api/users/{id}/inktotal
      */
@@ -123,6 +125,37 @@ public class UserController {
         }
         return ResponseEntity.notFound().build();
     }
+    
+
+    /**
+     * GET /api/users/avgScore/{id}
+     */
+    @GetMapping("/avgScore/{id}")
+    public ResponseEntity<Double> getAvgScore(@PathVariable String id) {
+        Double avgScore = 0.0;
+        int count = 0;
+
+        try {
+            Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
+
+            for (String sessionID : user.get().getSessionIds()) {
+                Optional<Session> session = sessionRepository.findById(sessionID);
+
+                try {
+                    avgScore += session.get().getOptimizingScore();
+                    count++;
+                    
+                } catch (Exception e) {
+                    System.err.printf("No session with ID %s.%n", sessionID);
+                }
+            }
+            avgScore = avgScore/count; 
+            return(new ResponseEntity<Double>(avgScore, HttpStatus.OK));
+        } catch (Exception e) {
+            return(ResponseEntity.internalServerError().build());
+        }
+    }
+
     
     /**
      * POST /api/users/{id}/sessions/{sessionId}
