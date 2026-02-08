@@ -5,19 +5,16 @@ import { dashboardApi } from '@/services/dashboardApi';
 import { FileText, Droplets, TrendingUp, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-
 interface OrgMetrics {
   totalPagesSaved: number;
   totalInkSaved: number;
   avgOptimizingScore: number;
   totalSessions: number;
 }
-
 const Dashboard = () => {
   const [metrics, setMetrics] = useState<OrgMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
@@ -30,30 +27,27 @@ const Dashboard = () => {
           totalPagesSaved: 1247,
           totalInkSaved: 34.5,
           avgOptimizingScore: 78,
-          totalSessions: 89,
+          totalSessions: 89
         });
       } finally {
         setLoading(false);
       }
     };
-
     fetchMetrics();
   }, []);
-
   const MetricCard = ({
     title,
     value,
     unit,
     icon: Icon,
-    description,
+    description
   }: {
     title: string;
     value: string | number;
     unit?: string;
     icon: React.ElementType;
     description: string;
-  }) => (
-    <Card className="relative overflow-hidden">
+  }) => <Card className="relative overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <Icon className="h-5 w-5 text-primary" />
@@ -65,11 +59,8 @@ const Dashboard = () => {
         </div>
         <p className="text-xs text-muted-foreground mt-1">{description}</p>
       </CardContent>
-    </Card>
-  );
-
-  return (
-    <div className="min-h-screen bg-background p-6">
+    </Card>;
+  return <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -81,10 +72,8 @@ const Dashboard = () => {
           </Link>
         </div>
 
-        {loading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i}>
+        {loading ? <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => <Card key={i}>
                 <CardHeader className="pb-2">
                   <Skeleton className="h-4 w-24" />
                 </CardHeader>
@@ -92,44 +81,15 @@ const Dashboard = () => {
                   <Skeleton className="h-8 w-20 mb-2" />
                   <Skeleton className="h-3 w-32" />
                 </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <>
-            {error && (
-              <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
-                {error} (Showing demo data)
-              </div>
-            )}
+              </Card>)}
+          </div> : <>
+            {error}
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <MetricCard
-                title="Avg Optimization Score"
-                value={metrics?.avgOptimizingScore?.toFixed(0) || 0}
-                unit="/100"
-                icon={TrendingUp}
-                description="Organization-wide average"
-              />
-              <MetricCard
-                title="Pages Saved"
-                value={metrics?.totalPagesSaved?.toLocaleString() || 0}
-                icon={FileText}
-                description="Total pages conserved"
-              />
-              <MetricCard
-                title="Ink Saved"
-                value={metrics?.totalInkSaved?.toFixed(1) || 0}
-                unit="%"
-                icon={Droplets}
-                description="Average ink reduction"
-              />
-              <MetricCard
-                title="Total Sessions"
-                value={metrics?.totalSessions?.toLocaleString() || 0}
-                icon={BarChart3}
-                description="PDFs optimized to date"
-              />
+              <MetricCard title="Avg Optimization Score" value={metrics?.avgOptimizingScore?.toFixed(0) || 0} unit="/100" icon={TrendingUp} description="Organization-wide average" />
+              <MetricCard title="Pages Saved" value={metrics?.totalPagesSaved?.toLocaleString() || 0} icon={FileText} description="Total pages conserved" />
+              <MetricCard title="Ink Saved" value={metrics?.totalInkSaved?.toFixed(1) || 0} unit="%" icon={Droplets} description="Average ink reduction" />
+              <MetricCard title="Total Sessions" value={metrics?.totalSessions?.toLocaleString() || 0} icon={BarChart3} description="PDFs optimized to date" />
             </div>
 
             <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -175,11 +135,8 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </div>
-          </>
-        )}
+          </>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
