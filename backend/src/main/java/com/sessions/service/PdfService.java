@@ -139,19 +139,10 @@ public class PdfService {
 
             // Generate HTML report with 3 specific edits
             String prompt = """
-                Analyze this PDF and create an HTML report with exactly 3 specific edits to reduce ink and page usage.
+                Analyze this PDF and create an HTML5 document imitation with exactly 3 specific edits to reduce ink and page usage.
                 
-                Return ONLY a valid standalone HTML5 document with this structure:
-                - A header with the document title "Optimization Report"
-                - A summary section showing estimated savings (ink % and pages)
-                - 3 numbered recommendations, each with:
-                  - A clear title
-                  - What to change
-                  - Expected savings
-                - Use clean, modern CSS styling (inline styles)
-                - Use a professional color scheme (greens for savings)
-                
-                Do NOT use markdown. Start with <!DOCTYPE html>.
+                Return ONLY a valid standalone HTML5 document with this structure, try to imitate my input pdf file with the changes applied and generate an html file back
+                 <!DOCTYPE html>.
                 """;
 
             Content content = Content.fromParts(
