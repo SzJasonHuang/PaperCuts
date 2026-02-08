@@ -86,6 +86,17 @@ backend/
 | GET | `/api/users/avgScore/{id}` | Get user's average optimization score |
 | POST | `/api/users/{id}/sessions/{sessionId}` | Add session to user |
 
+### PDF Processing
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/pdf/upload` | Upload PDF (multipart: file, userId?) |
+| POST | `/api/pdf/{id}/analyze` | Analyze PDF, returns metrics + suggestions |
+| POST | `/api/pdf/{id}/optimize` | Optimize PDF with settings |
+| GET | `/api/pdf/{id}/status` | Get session status and metrics |
+| GET | `/api/pdf/{id}/original` | Download original PDF |
+| GET | `/api/pdf/{id}/optimized` | Download optimized PDF |
+| DELETE | `/api/pdf/{id}` | Delete session and files |
+
 ## MongoDB Atlas Setup (Teammate A)
 
 1. Create cluster at [MongoDB Atlas](https://cloud.mongodb.com)
