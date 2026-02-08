@@ -213,8 +213,8 @@ async function handleFileUpload(file) {
 function populateResults() {
   elements.fileName.textContent = sessionData.fileName;
   elements.pagesCount.textContent = sessionData.pagesBefore || '--';
-  elements.inkUsage.textContent = sessionData.inkBefore ? `${Math.round(sessionData.inkBefore)}%` : '--';
-  elements.optScore.textContent = sessionData.optimizingScore ? `${Math.round(sessionData.optimizingScore)}%` : '--';
+  elements.inkUsage.textContent = sessionData.inkBefore ? `${sessionData.inkBefore}%` : '--';
+  elements.optScore.textContent = sessionData.optimizingScore ? `${sessionData.optimizingScore}%` : '--';
 
   // Suggestions
   elements.suggestionsList.innerHTML = '';
@@ -269,7 +269,7 @@ async function handleOptimize() {
     // Calculate savings
     const pagesSaved = (sessionData.pagesBefore || 0) - (sessionData.pagesAfter || 0);
     const inkReduced = sessionData.inkBefore && sessionData.inkAfter
-      ? Math.round((1 - Math.round(sessionData.inkAfter) / Math.round(sessionData.inkBefore)) * 100)
+      ? Math.round((1 - sessionData.inkAfter / sessionData.inkBefore) * 100)
       : 0;
 
     elements.pagesSaved.textContent = pagesSaved > 0 ? `-${pagesSaved}` : '0';
