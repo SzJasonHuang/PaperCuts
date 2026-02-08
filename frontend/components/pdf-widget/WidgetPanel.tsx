@@ -219,17 +219,20 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
       <div className="flex items-center justify-center gap-2 p-3 border-b">
         {steps.map((step, idx) => (
           <div key={step.id} className="flex items-center">
-            <div
+            <button
+              onClick={() => idx < currentStepIndex && setCurrentStep(step.id)}
+              disabled={idx >= currentStepIndex}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors",
                 idx <= currentStepIndex
                   ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                  : "bg-muted text-muted-foreground",
+                idx < currentStepIndex && "cursor-pointer hover:opacity-80"
               )}
             >
               {step.icon}
               <span className="hidden sm:inline">{step.label}</span>
-            </div>
+            </button>
             {idx < steps.length - 1 && (
               <div className={cn(
                 "w-6 h-0.5 mx-1",
