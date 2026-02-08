@@ -166,7 +166,7 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-muted/50">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-foreground">PDF Optimizer</span>
+          <span className="text-lg font-semibold text-foreground">Paper Cuts</span>
           {/* Connection Status */}
           {!config.useMock && (
             <div className={cn(
