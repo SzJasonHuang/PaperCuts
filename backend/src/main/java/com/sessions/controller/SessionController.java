@@ -25,16 +25,11 @@ public class SessionController {
      * GET /api/sessions?userId={objectId}
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getSessions(
-            @RequestParam(required = false) String userId) {
+    public ResponseEntity<Map<String, Object>> getSessions() {
         
         List<Session> sessions;
         
-        if (userId != null && !userId.isEmpty()) {
-            sessions = sessionRepository.findByUserIdOrderByCreatedAtDesc(userId);
-        } else {
-            sessions = sessionRepository.findAllByOrderByCreatedAtDesc();
-        }
+        sessions = sessionRepository.findAllByOrderByCreatedAtDesc();
         
         Map<String, Object> response = new HashMap<>();
         response.put("sessions", sessions);

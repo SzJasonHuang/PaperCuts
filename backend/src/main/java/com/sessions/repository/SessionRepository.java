@@ -8,10 +8,6 @@ import java.util.List;
 @Repository
 public interface SessionRepository extends MongoRepository<Session, String> {
     
-    List<Session> findByUserId(String userId);
-    
-    List<Session> findByUserIdOrderByCreatedAtDesc(String userId);
-    
     List<Session> findAllByOrderByCreatedAtDesc();
     
     List<Session> findByOptimizingScoreGreaterThanEqual(Integer score);

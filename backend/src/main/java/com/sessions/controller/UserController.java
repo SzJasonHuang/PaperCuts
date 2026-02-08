@@ -81,7 +81,7 @@ public class UserController {
     
     /**
      * POST /api/users
-     * Body: { userId, name, isAdmin?, numUser? }
+     * Body: { name, isAdmin? }
      */
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
