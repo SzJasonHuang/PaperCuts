@@ -11,9 +11,6 @@ public class Session {
     @Id
     private String id;  // MongoDB ObjectId as string
     
-    @Indexed
-    private String userId;  // reference to users._id (ObjectId)
-    
     private Integer pages;
     private Double inkUse;          // normalized or ml
     private Integer optimizingScore; // 0-100
@@ -29,9 +26,6 @@ public class Session {
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
     
     public Integer getPages() { return pages; }
     public void setPages(Integer pages) { this.pages = pages; }

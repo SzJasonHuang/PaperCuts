@@ -1,6 +1,8 @@
 package com.sessions.controller;
 
+import com.sessions.model.Session;
 import com.sessions.model.User;
+import com.sessions.repository.SessionRepository;
 import com.sessions.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,11 +14,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
 public class UserController {
+    @Autowired
+    private SessionRepository sessionRepository;
     
     @Autowired
     private UserRepository userRepository;
@@ -45,6 +50,33 @@ public class UserController {
                 .or(() -> userRepository.findByName(id))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    
+    /**
+     * GET /api/users/{id}/inktotal
+     */
+    @GetMapping("/inktotal/{id}")
+    public ResponseEntity<Double> getUserInkTotal(@PathVariable String id) {
+        Double totalInk = 0.;
+
+        try {
+            Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
+
+            for (String sessionID : user.get().getSessionIds()) {
+                Optional<Session> session = sessionRepository.findById(sessionID);
+
+                try {
+                    totalInk += session.get().getInkUse();
+                } catch (Exception e) {
+                    System.err.printf("No session with ID %s.%n", sessionID);
+                }
+            }
+
+            return(new ResponseEntity<Double>(totalInk, HttpStatus.OK));
+        } catch (Exception e) {
+            return(new ResponseEntity<Double>(-1., HttpStatus.OK));
+        }
     }
     
     /**
