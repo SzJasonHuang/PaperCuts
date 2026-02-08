@@ -1,7 +1,8 @@
 import type { PdfSession, OptimizeSettings, AnalysisResult, UploadResponse } from '@/types/pdf';
 
 // Toggle for mock vs real API
-const USE_MOCK = true;
+// Set to false to use real Spring Boot backend
+const USE_MOCK = false;
 
 // Base API URL - point to your Spring Boot backend
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
