@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .allowedHeaders("*")
                 .exposedHeaders("Content-Disposition")             // For file downloads
-                .allowCredentials(true)
+                .allowCredentials(false)
                 .maxAge(3600);                                     // Cache preflight for 1 hour
     }
 }
