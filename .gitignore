@@ -25,3 +25,4 @@ dist-ssr
 
 # Builds
 backend/target/*
+backend/pdf-storage/*
