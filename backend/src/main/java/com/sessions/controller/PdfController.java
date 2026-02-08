@@ -157,24 +157,44 @@ public class PdfController {
     }
     
     /**
-     * GET /api/pdf/{id}/optimized
-     * Download optimized PDF
+     * GET /api/pdf/{id}/report
+     * Get HTML report content
      */
-    @GetMapping("/{id}/optimized")
-    public ResponseEntity<byte[]> getOptimizedPdf(@PathVariable String id) {
+    @GetMapping("/{id}/report")
+    public ResponseEntity<String> getReport(@PathVariable String id) {
+        try {
+            String htmlContent = pdfService.getReportHtml(id);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_HTML);
+            
+            return new ResponseEntity<>(htmlContent, headers, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * GET /api/pdf/{id}/report/download
+     * Download HTML report as file
+     */
+    @GetMapping("/{id}/report/download")
+    public ResponseEntity<byte[]> downloadReport(@PathVariable String id) {
         try {
             PdfSession session = pdfSessionRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Session not found"));
             
-            byte[] pdfBytes = pdfService.getPdfBytes(id, "optimized");
+            String htmlContent = pdfService.getReportHtml(id);
             
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentType(MediaType.TEXT_HTML);
             headers.setContentDisposition(ContentDisposition.builder("attachment")
-                    .filename("optimized_" + session.getOriginalFileName())
+                    .filename(session.getOriginalFileName().replace(".pdf", "") + "_report.html")
                     .build());
             
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            return new ResponseEntity<>(htmlContent.getBytes(), headers, HttpStatus.OK);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         } catch (IOException e) {
