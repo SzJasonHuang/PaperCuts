@@ -20,6 +20,16 @@ import java.nio.file.*;
 import java.time.Instant;
 import java.util.*;
 
+import com.google.common.collect.ImmutableList;
+import com.google.genai.Client;
+import com.google.genai.types.Content;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.Part;
+
+// Use Builder class for instantiation. Explicitly set the API key to use Gemini
+// Developer backend.
+
+
 @Service
 public class PdfService {
     
@@ -28,6 +38,8 @@ public class PdfService {
     
     @Value("${pdf.storage.path:./pdf-storage}")
     private String storagePath;
+    
+    private static Client client = Client.builder().apiKey("AIzaSyB3_OUxjBWHUKPoDu7A19tIQjawhkuJqKc").build();
     
     /**
      * Upload and store a PDF file
@@ -76,8 +88,19 @@ public class PdfService {
             double inkUsage = calculateInkUsage(document);
             session.setInkBefore(inkUsage);
             
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            document.save(baos);
+
+            Content content =
+            Content.fromParts(
+            Part.fromText("Suggest three ways this pdf could be edited to improve ink and page usage, for sustainability purposes. Additionally, don't use any markdown and maximum 40 words"),
+            Part.fromBytes(baos.toByteArray(),"application/pdf"));
+        
+            GenerateContentResponse response =
+            client.models.generateContent("gemini-2.5-flash", content, null);
+
             // Generate AI suggestions based on document analysis
-            List<String> suggestions = generateSuggestions(document, inkUsage);
+            List<String> suggestions = Arrays.asList(new String[]{response.text()});
             session.setSuggestions(suggestions);
             
             // Calculate initial optimization score
@@ -291,7 +314,7 @@ public class PdfService {
             }
         } catch (Exception e) {
             // Ignore
-        }
+        } 
         
         // General suggestions
         if (inkUsage > 0.15) {
