@@ -26,3 +26,5 @@ dist-ssr
 # Builds
 backend/target/*
 backend/pdf-storage/*
+
+backend/src/main/resources/application-local.properties
