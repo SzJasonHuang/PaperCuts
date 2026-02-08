@@ -114,10 +114,21 @@ export const pdfApi = {
   },
 
   /**
-   * Get URL for optimized PDF
+   * Get HTML report content
    */
-  getOptimizedPdfUrl(sessionId: string): string {
-    return `${API_BASE}/pdf/${sessionId}/optimized`;
+  async getReportHtml(sessionId: string): Promise<string> {
+    const response = await fetch(`${API_BASE}/pdf/${sessionId}/report`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch report');
+    }
+    return response.text();
+  },
+
+  /**
+   * Get URL for downloading HTML report
+   */
+  getReportDownloadUrl(sessionId: string): string {
+    return `${API_BASE}/pdf/${sessionId}/report/download`;
   },
 
   /**
