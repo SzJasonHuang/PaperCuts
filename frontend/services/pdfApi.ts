@@ -1,8 +1,8 @@
 import type { PdfSession, OptimizeSettings, AnalysisResult, UploadResponse } from '@/types/pdf';
 
 // Toggle for mock vs real API
-// Set to false to use real Spring Boot backend
-const USE_MOCK = false;
+// Set to true for demo mode without backend, false for real backend
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true' || false;
 
 // Base API URL - point to your Spring Boot backend
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
@@ -57,7 +57,49 @@ const mockAnalysis: AnalysisResult = {
 // Simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Helper to handle API errors
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    let errorMessage = `HTTP ${response.status}`;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.error || errorData.message || errorMessage;
+    } catch {
+      // Ignore JSON parse errors
+    }
+    throw new Error(errorMessage);
+  }
+  return response.json();
+}
+
 export const pdfApi = {
+  /**
+   * Check if backend is available
+   */
+  async checkHealth(): Promise<boolean> {
+    if (USE_MOCK) return true;
+    
+    try {
+      const response = await fetch(`${API_BASE}/health`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
+   * Get current configuration
+   */
+  getConfig() {
+    return {
+      useMock: USE_MOCK,
+      apiBase: API_BASE
+    };
+  },
+
   /**
    * Upload a PDF file
    */
@@ -80,11 +122,7 @@ export const pdfApi = {
       body: formData
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to upload PDF');
-    }
-
-    return response.json();
+    return handleResponse<UploadResponse>(response);
   },
 
   /**
@@ -100,11 +138,7 @@ export const pdfApi = {
       method: 'POST'
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to analyze PDF');
-    }
-
-    return response.json();
+    return handleResponse<AnalysisResult>(response);
   },
 
   /**
@@ -127,11 +161,7 @@ export const pdfApi = {
       body: JSON.stringify(settings)
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to optimize PDF');
-    }
-
-    return response.json();
+    return handleResponse<PdfSession>(response);
   },
 
   /**
@@ -144,12 +174,7 @@ export const pdfApi = {
     }
 
     const response = await fetch(`${API_BASE}/pdf/${sessionId}/status`);
-
-    if (!response.ok) {
-      throw new Error('Failed to get session');
-    }
-
-    return response.json();
+    return handleResponse<PdfSession>(response);
   },
 
   /**
@@ -157,7 +182,7 @@ export const pdfApi = {
    */
   getOriginalPdfUrl(sessionId: string): string {
     if (USE_MOCK) {
-      return '/sample.pdf'; // You'd need a sample PDF in public folder for testing
+      return '/sample.pdf';
     }
     return `${API_BASE}/pdf/${sessionId}/original`;
   },

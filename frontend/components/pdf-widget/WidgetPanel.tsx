@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { X, Upload, BarChart3, Eye } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Upload, BarChart3, Eye, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { UploadStep } from './UploadStep';
 import { ResultsStep } from './ResultsStep';
 import { PreviewStep } from './PreviewStep';
 import { pdfApi } from '@/services/pdfApi';
+import { useToast } from '@/hooks/use-toast';
 import type { PdfSession, OptimizeSettings } from '@/types/pdf';
 
 type Step = 'upload' | 'results' | 'preview';
@@ -25,6 +26,7 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
   const [currentStep, setCurrentStep] = useState<Step>('upload');
   const [session, setSession] = useState<PdfSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [backendConnected, setBackendConnected] = useState<boolean | null>(null);
   const [settings, setSettings] = useState<OptimizeSettings>({
     inkSaverLevel: 50,
     pageSaverLevel: 50,
@@ -32,11 +34,28 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
     excludeImages: false
   });
 
+  const { toast } = useToast();
+  const config = pdfApi.getConfig();
+
+  // Check backend connection on mount
+  useEffect(() => {
+    if (isOpen && !config.useMock) {
+      pdfApi.checkHealth().then(setBackendConnected);
+    } else if (config.useMock) {
+      setBackendConnected(true);
+    }
+  }, [isOpen, config.useMock]);
+
   const handleUpload = async (file: File) => {
     setIsLoading(true);
     try {
       // Upload the file
       const uploadResponse = await pdfApi.uploadPdf(file);
+      
+      toast({
+        title: "PDF Uploaded",
+        description: `Analyzing ${file.name}...`,
+      });
       
       // Analyze the PDF
       const analysis = await pdfApi.analyzePdf(uploadResponse.sessionId);
@@ -55,8 +74,18 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
       
       setSession(newSession);
       setCurrentStep('results');
+
+      toast({
+        title: "Analysis Complete",
+        description: `Found ${analysis.recommendations.length} optimization opportunities`,
+      });
     } catch (error) {
       console.error('Upload/analysis failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : "Could not connect to backend",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -70,8 +99,19 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
       const optimizedSession = await pdfApi.optimizePdf(session.id, settings);
       setSession(optimizedSession);
       setCurrentStep('preview');
+
+      const pagesSaved = (optimizedSession.pagesBefore || 0) - (optimizedSession.pagesAfter || 0);
+      toast({
+        title: "Optimization Complete",
+        description: `Saved ${pagesSaved} pages, reduced ink by ${Math.round((1 - (optimizedSession.inkAfter || 0) / (optimizedSession.inkBefore || 1)) * 100)}%`,
+      });
     } catch (error) {
       console.error('Optimization failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Optimization Failed",
+        description: error instanceof Error ? error.message : "Could not optimize PDF",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +124,18 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
     try {
       const optimizedSession = await pdfApi.optimizePdf(session.id, settings);
       setSession(optimizedSession);
+
+      toast({
+        title: "Regeneration Complete",
+        description: "PDF has been re-optimized with new settings",
+      });
     } catch (error) {
       console.error('Regeneration failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Regeneration Failed",
+        description: error instanceof Error ? error.message : "Could not regenerate PDF",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +167,33 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
       <div className="flex items-center justify-between p-4 border-b bg-muted/50">
         <div className="flex items-center gap-2">
           <span className="text-lg font-semibold text-foreground">PDF Optimizer</span>
+          {/* Connection Status */}
+          {!config.useMock && (
+            <div className={cn(
+              "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs",
+              backendConnected === null ? "bg-muted text-muted-foreground" :
+              backendConnected ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
+            )}>
+              {backendConnected === null ? (
+                <span>Checking...</span>
+              ) : backendConnected ? (
+                <>
+                  <Wifi className="h-3 w-3" />
+                  <span>Connected</span>
+                </>
+              ) : (
+                <>
+                  <WifiOff className="h-3 w-3" />
+                  <span>Offline</span>
+                </>
+              )}
+            </div>
+          )}
+          {config.useMock && (
+            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-accent text-accent-foreground">
+              Demo Mode
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {session && (
@@ -129,6 +206,14 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
           </Button>
         </div>
       </div>
+
+      {/* Backend Offline Warning */}
+      {!config.useMock && backendConnected === false && (
+        <div className="flex items-center gap-2 p-3 bg-destructive/10 border-b text-destructive text-sm">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <span>Backend not connected. Start with: <code className="bg-background px-1 rounded">cd backend && ./mvnw spring-boot:run</code></span>
+        </div>
+      )}
 
       {/* Step Indicator */}
       <div className="flex items-center justify-center gap-2 p-3 border-b">
@@ -158,7 +243,10 @@ export const WidgetPanel = ({ isOpen, onClose }: WidgetPanelProps) => {
       {/* Content */}
       <div className="overflow-y-auto max-h-[calc(80vh-120px)]">
         {currentStep === 'upload' && (
-          <UploadStep onUpload={handleUpload} isUploading={isLoading} />
+          <UploadStep 
+            onUpload={handleUpload} 
+            isUploading={isLoading} 
+          />
         )}
         
         {currentStep === 'results' && session && (
