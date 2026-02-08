@@ -50,7 +50,6 @@ public class PdfService {
         
         // Create session record
         PdfSession session = new PdfSession();
-        session.setUserId(userId);
         session.setOriginalFileName(originalFileName);
         session.setOriginalFilePath(filePath.toString());
         session.setStatus("UPLOADED");
