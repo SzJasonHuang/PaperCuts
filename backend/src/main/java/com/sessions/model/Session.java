@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.Instant;
 
-@Document(collection = "sessions")
+@Document(collection = "Sessions")
 public class Session {
     
     @Id
