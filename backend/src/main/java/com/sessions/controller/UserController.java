@@ -37,12 +37,12 @@ public class UserController {
     
     /**
      * GET /api/users/{id}
-     * Can lookup by ObjectId or by userId (e.g., "U12345")
      */
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
         // First try by MongoDB _id
         return userRepository.findById(id)
+                .or(() -> userRepository.findByName(id))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

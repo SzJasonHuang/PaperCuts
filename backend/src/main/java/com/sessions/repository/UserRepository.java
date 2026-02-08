@@ -8,8 +8,7 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
-    
-    Optional<User> findByid(String id);
+    Optional<User> findByName(String name);
 
     List<User> findByIsAdmin(Boolean isAdmin);
     
