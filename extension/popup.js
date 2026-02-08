@@ -49,12 +49,15 @@ async function checkConnection() {
     if (response.ok) {
       elements.connectionStatus.textContent = '🟢 Connected';
       elements.connectionStatus.className = 'status connected';
+      elements.dropZone.classList.remove('disabled');
     } else {
       throw new Error('Not OK');
     }
   } catch {
-    elements.connectionStatus.textContent = '🔴 Offline';
+    elements.connectionStatus.textContent = '🔴 Backend not running';
     elements.connectionStatus.className = 'status offline';
+    elements.dropZone.classList.add('disabled');
+    showError('Backend server not running. Start the Spring Boot backend locally:\n\ncd backend && ./mvnw spring-boot:run');
   }
 }
 
