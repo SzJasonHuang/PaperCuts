@@ -75,7 +75,7 @@ public class UserController {
 
             return(new ResponseEntity<Double>(totalInk, HttpStatus.OK));
         } catch (Exception e) {
-            return(new ResponseEntity<Double>(-1., HttpStatus.OK));
+            return(ResponseEntity.internalServerError().build());
         }
     }
     
