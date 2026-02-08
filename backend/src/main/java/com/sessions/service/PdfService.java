@@ -157,9 +157,11 @@ public class PdfService {
 
             File html = Paths.get(storagePath).resolve(session.getId() + "_optimized.html").toFile();
 
-            PrintWriter out = new PrintWriter(html);
+            // Sanitize the AI response to remove markdown formatting
+            String cleanedHtml = sanitizeHtmlResponse(response.text());
 
-            out.println(response.text());
+            PrintWriter out = new PrintWriter(html);
+            out.println(cleanedHtml);
             out.close();
             
             OutputStream os = new FileOutputStream(optimizedPath.toFile());
@@ -256,6 +258,44 @@ public class PdfService {
     }
     
     // ========== Private Helper Methods ==========
+    
+    /**
+     * Sanitize AI response to extract clean HTML
+     * Removes markdown formatting and extracts HTML content
+     */
+    private String sanitizeHtmlResponse(String response) {
+        if (response == null || response.isEmpty()) {
+            return response;
+        }
+        
+        String cleaned = response;
+        
+        // Remove markdown code block markers
+        cleaned = cleaned.replaceAll("```html\\s*", "");
+        cleaned = cleaned.replaceAll("```HTML\\s*", "");
+        cleaned = cleaned.replaceAll("```\\s*", "");
+        
+        // Trim whitespace
+        cleaned = cleaned.trim();
+        
+        // Try to extract just the HTML document if there's extra text
+        int doctypeIndex = cleaned.toLowerCase().indexOf("<!doctype");
+        int htmlStartIndex = cleaned.toLowerCase().indexOf("<html");
+        int htmlEndIndex = cleaned.toLowerCase().lastIndexOf("</html>");
+        
+        int startIndex = -1;
+        if (doctypeIndex >= 0) {
+            startIndex = doctypeIndex;
+        } else if (htmlStartIndex >= 0) {
+            startIndex = htmlStartIndex;
+        }
+        
+        if (startIndex >= 0 && htmlEndIndex > startIndex) {
+            cleaned = cleaned.substring(startIndex, htmlEndIndex + 7); // 7 = length of "</html>"
+        }
+        
+        return cleaned;
+    }
     
     /**
      * Calculate ink usage by rendering pages and measuring darkness
