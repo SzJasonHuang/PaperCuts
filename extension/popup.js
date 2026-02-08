@@ -57,7 +57,7 @@ async function checkConnection() {
     elements.connectionStatus.textContent = '🔴 Backend not running';
     elements.connectionStatus.className = 'status offline';
     elements.dropZone.classList.add('disabled');
-    showError('Backend server not running. Start the Spring Boot backend locally:\n\ncd backend && ./mvnw spring-boot:run');
+    showError('Backend server not running. Start the Spring Boot backend from the backend/ folder.');
   }
 }
 
