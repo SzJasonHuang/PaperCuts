@@ -1,7 +1,7 @@
 import { Session, CreateSessionRequest, SessionsResponse, User, UsersResponse, CreateUserRequest } from '@/types/session';
 
 // Configure your Spring Boot backend URL here
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'; // 8080 here is referencing the backend port, not the frontend.
 
 
 
