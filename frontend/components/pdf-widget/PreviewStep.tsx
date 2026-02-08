@@ -110,6 +110,8 @@ export const PreviewStep = ({
                 className="w-full h-full border-0"
                 title="Optimization Report"
                 sandbox="allow-same-origin"
+                style={{ overflow: 'hidden' }}
+                scrolling="no"
               />
             ) : (
               <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
