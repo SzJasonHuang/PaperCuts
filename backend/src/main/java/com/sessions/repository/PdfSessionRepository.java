@@ -9,8 +9,6 @@ import java.util.List;
 @Repository
 public interface PdfSessionRepository extends MongoRepository<PdfSession, String> {
     
-    List<PdfSession> findByUserIdOrderByCreatedAtDesc(String userId);
-    
     List<PdfSession> findAllByOrderByCreatedAtDesc();
     
     List<PdfSession> findByStatus(String status);
