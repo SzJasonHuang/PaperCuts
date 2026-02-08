@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Cuts</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1>🌿 Paper Cuts</h1>
+      <div id="connection-status" class="status checking">Checking...</div>
+    </header>
+
+    <!-- Step Indicator -->
+    <div class="steps">
+      <div class="step active" data-step="upload">
+        <span class="step-icon">📤</span>
+        <span class="step-label">Upload</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step" data-step="results">
+        <span class="step-icon">📊</span>
+        <span class="step-label">Results</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step" data-step="preview">
+        <span class="step-icon">👁️</span>
+        <span class="step-label">Preview</span>
+      </div>
+    </div>
+
+    <!-- Upload Step -->
+    <div id="upload-step" class="step-content active">
+      <div class="upload-zone" id="drop-zone">
+        <div class="upload-icon">📄</div>
+        <p class="upload-text">Drop PDF here or click to browse</p>
+        <p class="upload-hint">Max 50MB</p>
+        <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
+      </div>
+      <div id="upload-progress" class="progress-container hidden">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <p class="progress-text">Uploading...</p>
+      </div>
+    </div>
+
+    <!-- Results Step -->
+    <div id="results-step" class="step-content">
+      <div class="file-info">
+        <span class="file-icon">📄</span>
+        <span id="file-name" class="file-name">document.pdf</span>
+      </div>
+      
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Pages</div>
+          <div id="pages-count" class="metric-value">--</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Ink Usage</div>
+          <div id="ink-usage" class="metric-value">--</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Optimization Score</div>
+          <div id="opt-score" class="metric-value">--</div>
+        </div>
+      </div>
+
+      <div class="suggestions" id="suggestions-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <button id="optimize-btn" class="btn btn-primary">
+        <span>🚀</span> Generate EcoPDF Report
+      </button>
+    </div>
+
+    <!-- Preview Step -->
+    <div id="preview-step" class="step-content">
+      <div class="preview-header">
+        <h3>EcoPDF Report Ready</h3>
+      </div>
+      
+      <div class="savings-summary">
+        <div class="saving">
+          <span class="saving-label">Pages Saved</span>
+          <span id="pages-saved" class="saving-value">--</span>
+        </div>
+        <div class="saving">
+          <span class="saving-label">Ink Reduced</span>
+          <span id="ink-reduced" class="saving-value">--</span>
+        </div>
+      </div>
+
+      <div class="report-preview" id="report-preview">
+        <!-- iframe injected by JS -->
+      </div>
+
+      <div class="actions">
+        <button id="download-original-btn" class="btn btn-secondary">
+          📄 Original PDF
+        </button>
+        <button id="download-report-btn" class="btn btn-primary">
+          📥 Download EcoPDF
+        </button>
+      </div>
+
+      <button id="new-btn" class="btn btn-ghost">
+        Start New
+      </button>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="error-container hidden">
+      <div class="error-icon">⚠️</div>
+      <p id="error-message" class="error-text">Something went wrong</p>
+      <button id="retry-btn" class="btn btn-secondary">Try Again</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
