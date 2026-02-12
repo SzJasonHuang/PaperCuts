@@ -40,8 +40,21 @@ public class PdfService {
     @Value("${pdf.storage.path:./pdf-storage}")
     private String storagePath;
 
-    private static Client client = Client.builder().apiKey("(Insert API Key Here)").build();
-    
+    @Value("${gemini.api.key}")
+    private String geminiKey;
+
+    private Client geminiClient;
+
+    private Client getClient() {
+    if (geminiClient == null) {
+        if (geminiKey == null || geminiKey.isEmpty()) {
+            throw new RuntimeException("GEMINI_API_KEY is not set");
+        }
+        geminiClient = Client.builder().apiKey(geminiKey).build();
+    }
+    return geminiClient;
+}
+
     /**
      * Upload and store a PDF file
      */
@@ -99,7 +112,7 @@ public class PdfService {
             
         
             GenerateContentResponse response =
-            client.models.generateContent("gemini-2.5-flash", content, null);
+            getClient().models.generateContent("gemini-2.5-flash", content, null);
 
             // Generate AI suggestions based on document analysis
             List<String> suggestions = Arrays.asList(response.text().split("\\$NEWLINE\\$"));
@@ -113,7 +126,7 @@ public class PdfService {
 
 
             response =
-            client.models.generateContent("gemini-2.5-flash", content, null);
+            getClient().models.generateContent("gemini-2.5-flash", content, null);
             
             int score = 50;
             try {
@@ -162,7 +175,7 @@ public class PdfService {
                 Part.fromBytes(baos.toByteArray(), "application/pdf")
             );
 
-            GenerateContentResponse response = client.models.generateContent("gemini-2.5-flash", content, null);
+            GenerateContentResponse response = getClient().models.generateContent("gemini-2.5-flash", content, null);
 
             // Save HTML report
             String reportFileName = session.getId() + "_report.html";
