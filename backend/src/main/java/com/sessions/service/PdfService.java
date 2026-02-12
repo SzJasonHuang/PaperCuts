@@ -4,28 +4,22 @@ import com.sessions.model.PdfSession;
 import com.sessions.repository.PdfSessionRepository;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.*;
 import java.time.Instant;
 import java.util.*;
 
-import com.google.common.collect.ImmutableList;
 import com.google.genai.Client;
 import com.google.genai.types.Content;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 // Use Builder class for instantiation. Explicitly set the API key to use Gemini
 // Developer backend.
@@ -372,101 +366,8 @@ public class PdfService {
         return (totalDarkness / (double) sampledPixels) / 255.0;
     }
     
-    /**
-     * Generate optimization suggestions based on document analysis
-     */
-    private List<String> generateSuggestions(PDDocument document, double inkUsage) {
-        List<String> suggestions = new ArrayList<>();
-        
-        // Check page count
-        int pageCount = document.getNumberOfPages();
-        if (pageCount > 20) {
-            suggestions.add("Document has " + pageCount + " pages - consider duplex printing to reduce paper usage");
-        }
-        
-        // Check ink usage
-        if (inkUsage > 0.25) {
-            suggestions.add("High ink coverage detected (" + Math.round(inkUsage * 100) + "%) - enabling grayscale mode could save up to 30% ink");
-        }
-        
-        // Check for potential margin reduction
-        try {
-            PDPage firstPage = document.getPage(0);
-            PDRectangle mediaBox = firstPage.getMediaBox();
-            float pageWidth = mediaBox.getWidth();
-            float pageHeight = mediaBox.getHeight();
-            
-            // Standard US Letter is 612x792 points
-            if (pageWidth >= 600 && pageHeight >= 780) {
-                suggestions.add("Standard page size detected - reducing margins could save 2-4 pages");
-            }
-        } catch (Exception e) {
-            // Ignore
-        } 
-        
-        // General suggestions
-        if (inkUsage > 0.15) {
-            suggestions.add("Background elements detected - removing backgrounds could reduce ink by 15-20%");
-        }
-        
-        suggestions.add("Image compression available - can reduce file size by up to 40% with minimal quality loss");
-        
-        return suggestions;
-    }
     
-    /**
-     * Calculate optimization score (0-100)
-     */
-    private int calculateOptimizingScore(PDDocument document) {
-        int score = 50; // Base score
-        
-        // Penalize for high page count
-        int pages = document.getNumberOfPages();
-        if (pages < 5) score += 20;
-        else if (pages < 20) score += 10;
-        else if (pages > 50) score -= 10;
-        
-        // Check margins (simplified)
-        try {
-            PDPage page = document.getPage(0);
-            PDRectangle cropBox = page.getCropBox();
-            PDRectangle mediaBox = page.getMediaBox();
-            
-            // If crop box equals media box, margins might be reducible
-            if (cropBox.equals(mediaBox)) {
-                score += 15; // Room for margin optimization
-            }
-        } catch (Exception e) {
-            // Ignore
-        }
-        
-        return Math.max(0, Math.min(100, score));
-    }
     
-    /**
-     * Apply margin reduction to document
-     */
-    private void applyMarginReduction(PDDocument document, int level) {
-        // Margin reduction percentage based on level (0-100)
-        float reductionPercent = level / 200.0f; // Max 50% reduction at level 100
-        
-        for (PDPage page : document.getPages()) {
-            PDRectangle mediaBox = page.getMediaBox();
-            float width = mediaBox.getWidth();
-            float height = mediaBox.getHeight();
-            
-            // Calculate new margins
-            float marginReduction = Math.min(width, height) * reductionPercent * 0.1f;
-            
-            // Create new crop box with reduced margins
-            PDRectangle newCropBox = new PDRectangle(
-                    marginReduction,
-                    marginReduction,
-                    width - (2 * marginReduction),
-                    height - (2 * marginReduction)
-            );
-            
-            page.setCropBox(newCropBox);
-        }
-    }
+   
+   
 }
