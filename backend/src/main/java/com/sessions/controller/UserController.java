@@ -1,9 +1,10 @@
 package com.sessions.controller;
 
-import com.sessions.model.Session;
+
 import com.sessions.model.User;
-import com.sessions.repository.SessionRepository;
+import com.sessions.model.PdfSession;
 import com.sessions.repository.UserRepository;
+import com.sessions.repository.PdfSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
-    private SessionRepository sessionRepository;
+    private PdfSessionRepository pdfSessionRepository;
     
     @Autowired
     private UserRepository userRepository;
@@ -66,7 +68,7 @@ public class UserController {
             Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
 
             for (String sessionID : user.get().getSessionIds()) {
-                Optional<Session> session = sessionRepository.findById(sessionID);
+                Optional<PdfSession> session = pdfSessionRepository.findById(sessionID);
 
                 try {
                     totalPages += session.get().getPages();
@@ -94,7 +96,7 @@ public class UserController {
             Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
 
             for (String sessionID : user.get().getSessionIds()) {
-                Optional<Session> session = sessionRepository.findById(sessionID);
+                Optional<PdfSession> session = pdfSessionRepository.findById(sessionID);
 
                 try {
                     totalInk += session.get().getInkUse();
@@ -168,7 +170,7 @@ public class UserController {
             Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
 
             for (String sessionID : user.get().getSessionIds()) {
-                Optional<Session> session = sessionRepository.findById(sessionID);
+                Optional<Session> session = pdfSessionRepository.findById(sessionID);
 
                 try {
                     avgScore += session.get().getOptimizingScore();
