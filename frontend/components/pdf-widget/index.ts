@@ -4,4 +4,3 @@ export { WidgetPanel } from './WidgetPanel';
 export { UploadStep } from './UploadStep';
 export { ResultsStep } from './ResultsStep';
 export { PreviewStep } from './PreviewStep';
-export { OptimizationControls } from './OptimizationControls';
