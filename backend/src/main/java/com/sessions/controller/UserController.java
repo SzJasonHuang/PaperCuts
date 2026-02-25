@@ -71,7 +71,7 @@ public class UserController {
                 Optional<PdfSession> session = pdfSessionRepository.findById(sessionID);
 
                 try {
-                    totalPages += session.get().getPages();
+                    totalPages += session.get().getPagesBefore();
                 } catch (Exception e) {
                     System.err.printf("No session with ID %s.%n", sessionID);
                 }
@@ -99,7 +99,7 @@ public class UserController {
                 Optional<PdfSession> session = pdfSessionRepository.findById(sessionID);
 
                 try {
-                    totalInk += session.get().getInkUse();
+                    totalInk += session.get().getInkBefore();
                 } catch (Exception e) {
                     System.err.printf("No session with ID %s.%n", sessionID);
                 }
@@ -170,7 +170,7 @@ public class UserController {
             Optional<User> user = userRepository.findById(id).or(() -> userRepository.findByName(id));
 
             for (String sessionID : user.get().getSessionIds()) {
-                Optional<Session> session = pdfSessionRepository.findById(sessionID);
+                Optional<PdfSession> session = pdfSessionRepository.findById(sessionID);
 
                 try {
                     avgScore += session.get().getOptimizingScore();
