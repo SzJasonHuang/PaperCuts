@@ -1,7 +1,7 @@
 package com.sessions.controller;
 
-import com.sessions.model.Session;
-import com.sessions.repository.SessionRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sessions.repository.PdfSessionRepository;
+
 @RestController
 @RequestMapping("/api/dashboard")
 @CrossOrigin(origins = "*")
 public class DashboardController {
 
     @Autowired
-    private SessionRepository sessionRepository;
+    private PdfSessionRepository sessionRepository;
 
     /**
      * GET /api/dashboard/org-metrics
