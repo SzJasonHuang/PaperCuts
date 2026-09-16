@@ -40,7 +40,7 @@ All colors MUST be HSL.
     --input: 225 12% 14%;
     --ring: 210 100% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.625rem;
 
     --sidebar-background: 225 15% 8%;
     --sidebar-foreground: 210 20% 85%;
@@ -59,6 +59,28 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  /* Ambient glow behind the app so dark surfaces are not flat */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 30rem at 100% -10%, hsl(var(--primary) / 0.12), transparent 60%),
+      radial-gradient(50rem 28rem at -10% 110%, hsl(var(--success) / 0.08), transparent 60%);
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+  }
+
+  /* Numeric values line up nicely in the dashboard */
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
